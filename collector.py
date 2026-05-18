@@ -41,6 +41,7 @@ def get_connection():
         password=DB_PASSWORD,
         port=1433,
         autocommit=False,
+        encrypt=True,
         as_dict=False
     )
 
