@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pyodbc
+import pymssql
 import requests
 from dotenv import load_dotenv
 
@@ -33,18 +33,15 @@ def validate_config() -> None:
         raise RuntimeError("Datenbankverbindungsdaten fehlen.")
 
 
-def get_connection() -> pyodbc.Connection:
-    conn_str = (
-        f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-        f"SERVER={DB_SERVER};"
-        f"DATABASE={DB_NAME};"
-        f"UID={DB_USER};"
-        f"PWD={DB_PASSWORD};"
-        "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+def get_connection():
+    return pymssql.connect(
+        server=DB_SERVER,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=1433,
+        autocommit=False
     )
-    conn = pyodbc.connect(conn_str)
-    conn.autocommit = False
-    return conn
 
 
 def init_db() -> None:
@@ -77,7 +74,7 @@ def init_db() -> None:
         conn.close()
 
 
-def upsert_city(cursor: pyodbc.Cursor, data: dict) -> int:
+def upsert_city(cursor, data: dict) -> int:
     cursor.execute(
         """
         MERGE dbo.cities AS target
@@ -118,7 +115,7 @@ def upsert_city(cursor: pyodbc.Cursor, data: dict) -> int:
     return row[0]
 
 
-def insert_current(cursor: pyodbc.Cursor, city_id: int, data: dict) -> None:
+def insert_current(cursor, city_id: int, data: dict) -> None:
     now = datetime.now(timezone.utc)
     measured = datetime.fromtimestamp(data["dt"], tz=timezone.utc)
     sunrise = datetime.fromtimestamp(data["sys"]["sunrise"], tz=timezone.utc)
@@ -158,8 +155,7 @@ def insert_current(cursor: pyodbc.Cursor, city_id: int, data: dict) -> None:
         ),
     )
 
-
-def insert_forecast(cursor: pyodbc.Cursor, city_id: int, entries: list) -> None:
+def insert_forecast(cursor, city_id: int, entries: list) -> None:
     now = datetime.now(timezone.utc)
     rows = []
 
