@@ -1,7 +1,7 @@
 import logging
 import azure.functions as func
 
-from data_collector import init_db, collect_once
+from collector import init_db, collect_once
 
 app = func.FunctionApp()
 
