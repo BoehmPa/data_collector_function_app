@@ -1,8 +1,7 @@
 python-dotenv>=1.0.0
 requests>=2.32.0
-pymssql
 flask
 flask-cors
 azure-functions
-
+pymssql>=2.3.0
 
