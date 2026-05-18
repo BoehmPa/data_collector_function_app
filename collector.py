@@ -41,7 +41,8 @@ def get_connection():
         password=DB_PASSWORD,
         port=1433,
         autocommit=False,
-        encrypt=True,
+       encryption_level=pytds.EncryptionLevel.REQUIRE,
+        validate_host=False,
         as_dict=False
     )
 
