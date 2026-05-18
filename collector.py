@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pytds
+import pyodbc
 import requests
 from dotenv import load_dotenv
 
@@ -34,16 +34,20 @@ def validate_config() -> None:
 
 
 def get_connection():
-    return pytds.connect(
-        server=DB_SERVER,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        port=1433,
-        autocommit=False,
-        tds_version=pytds.tds_base.TDS74,
-        cafile=None
+    conn_str = (
+        f"DRIVER={{ODBC Driver 18 for SQL Server}};"
+        f"SERVER={DB_SERVER};"
+        f"DATABASE={DB_NAME};"
+        f"UID={DB_USER};"
+        f"PWD={DB_PASSWORD};"
+        "Encrypt=yes;"
+        "TrustServerCertificate=no;"
+        "Connection Timeout=30;"
     )
+
+    conn = pyodbc.connect(conn_str)
+    conn.autocommit = False
+    return conn
 
 def init_db() -> None:
     if not SCHEMA_PATH.exists():
@@ -57,6 +61,7 @@ def init_db() -> None:
     ]
 
     conn = get_connection()
+
 
     try:
         cursor = conn.cursor()
