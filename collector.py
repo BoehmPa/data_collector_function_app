@@ -41,9 +41,8 @@ def get_connection():
         password=DB_PASSWORD,
         port=1433,
         autocommit=False,
-        encryption_level=1,
-        validate_host=False,
-        as_dict=False
+        tds_version=pytds.tds_base.TDS74,
+        cafile=None
     )
 
 def init_db() -> None:
