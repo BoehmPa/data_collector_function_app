@@ -1,5 +1,6 @@
 import logging
 import azure.functions as func
+from collector import collect_once
 
 app = func.FunctionApp()
 
@@ -11,3 +12,4 @@ app = func.FunctionApp()
 )
 def weather_collector(timer: func.TimerRequest) -> None:
     logging.info("Weather collector started.")
+    collect_once()
