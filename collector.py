@@ -81,28 +81,38 @@ def init_db() -> None:
 
 
 def upsert_city(cursor, data: dict) -> int:
+    row = cursor.execute(
+        "SELECT id FROM dbo.cities WHERE name = ?",
+        (data["name"],)
+    ).fetchone()
+
+    if row:
+        cursor.execute(
+            """
+            UPDATE dbo.cities
+            SET country = ?,
+                lat = ?,
+                lon = ?,
+                timezone_offset = ?
+            WHERE id = ?
+            """,
+            (
+                data["country"],
+                data["lat"],
+                data["lon"],
+                data["timezone_offset"],
+                row[0],
+            ),
+        )
+        return row[0]
+
     cursor.execute(
         """
-        MERGE dbo.cities AS target
-        USING (
-            SELECT ? AS name, ? AS country, ? AS lat, ? AS lon, ? AS timezone_offset
-        ) AS source
-        ON target.name = source.name
-        WHEN MATCHED THEN
-            UPDATE SET
-                country = source.country,
-                lat = source.lat,
-                lon = source.lon,
-                timezone_offset = source.timezone_offset
-        WHEN NOT MATCHED THEN
-            INSERT (name, country, lat, lon, timezone_offset)
-            VALUES (
-                source.name,
-                source.country,
-                source.lat,
-                source.lon,
-                source.timezone_offset
-            );
+        INSERT INTO dbo.cities (
+            name, country, lat, lon, timezone_offset
+        )
+        OUTPUT INSERTED.id
+        VALUES (?, ?, ?, ?, ?)
         """,
         (
             data["name"],
@@ -113,12 +123,8 @@ def upsert_city(cursor, data: dict) -> int:
         ),
     )
 
-    row = cursor.execute(
-        "SELECT id FROM dbo.cities WHERE name = ?",
-        (data["name"],),
-    ).fetchone()
-
-    return row[0]
+    new_row = cursor.fetchone()
+    return new_row[0]
 
 
 def insert_current(cursor, city_id: int, data: dict) -> None:
