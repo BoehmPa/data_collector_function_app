@@ -10,4 +10,4 @@ app = func.FunctionApp()
     use_monitor=True
 )
 def weather_collector(timer: func.TimerRequest) -> None:
-    logging.info("Minimal timer function loaded.")
+    logging.info("Weather collector started.")
