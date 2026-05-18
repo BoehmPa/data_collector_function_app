@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pymssql
+import pytds
 import requests
 from dotenv import load_dotenv
 
@@ -34,15 +34,15 @@ def validate_config() -> None:
 
 
 def get_connection():
-    return pymssql.connect(
+    return pytds.connect(
         server=DB_SERVER,
+        database=DB_NAME,
         user=DB_USER,
         password=DB_PASSWORD,
-        database=DB_NAME,
         port=1433,
-        autocommit=False
+        autocommit=False,
+        as_dict=False
     )
-
 
 def init_db() -> None:
     if not SCHEMA_PATH.exists():

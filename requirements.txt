@@ -1,5 +1,5 @@
 python-dotenv>=1.0.0
 requests>=2.32.0
 azure-functions
-pymssql>=2.3.0
+python-tds
 
