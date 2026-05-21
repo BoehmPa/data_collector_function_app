@@ -21,7 +21,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 SCHEMA_PATH = Path(__file__).parent / "setup_database.sql"
 
-CITIES = ["Berlin", "Heilbronn", "Hamburg", "Wien", "Zürich"]
+CITIES = ["Berlin", "Heilbronn", "Hamburg", "Wien", "Zürich", "Nuuk", "Los Angeles", "Sydney", "Weinsberg", "Washington", "Kapstadt", "Rio de Janeiro", "New York", "Hongkong" ]
 
 log = logging.getLogger(__name__)
 
